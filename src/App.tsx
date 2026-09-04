@@ -5,23 +5,22 @@ import { InstructionBuilder } from "./components/InstructionBuilder";
 import { ProgramList } from "./components/ProgramList";
 import { StatusBar } from "./components/StatusBar";
 import { useTurtleRunner } from "./hooks/useTurtleRunner";
-import type { Instruction } from "./types";
+import { useProgramEditor } from "./hooks/useProgramEditor";
 import { PrintView } from "./print/PrintView";
 
 function Game() {
   const [levelIndex, setLevelIndex] = useState(0);
   const level = LEVELS[levelIndex];
-  const [program, setProgram] = useState<Instruction[]>([]);
+  const { program, addInstruction, removeInstruction, clearProgram, maxForward } =
+    useProgramEditor(level);
   const { turtle, status, activeInstruction, run, reset } = useTurtleRunner(level);
 
   const running = status.kind === "running";
 
   const selectLevel = (i: number) => {
     setLevelIndex(i);
-    setProgram([]);
+    clearProgram();
   };
-
-  const maxForward = level.size - 1;
 
   return (
     <div className="wrap">
@@ -60,12 +59,12 @@ function Game() {
           <InstructionBuilder
             maxForward={maxForward}
             disabled={running}
-            onAdd={(instr) => setProgram((p) => [...p, instr])}
+            onAdd={addInstruction}
           />
           <ProgramList
             program={program}
             activeIndex={activeInstruction}
-            onRemove={(i) => setProgram((p) => p.filter((_, idx) => idx !== i))}
+            onRemove={removeInstruction}
           />
 
           <div className="run-row">
@@ -79,7 +78,7 @@ function Game() {
               className="secondary"
               disabled={running}
               onClick={() => {
-                setProgram([]);
+                clearProgram();
                 reset();
               }}
             >

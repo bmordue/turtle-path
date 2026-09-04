@@ -1,22 +1,31 @@
 import { useCallback, useRef, useState } from "react";
 import type { Instruction, Level, RunStatus, TurtleState } from "../types";
-import { initialTurtleState, runProgram } from "../lib/turtle";
+import { initialTurtleState } from "../lib/turtle";
+import { runProgram } from "../lib/simulation";
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-const TURN_DELAY_MS = 220;
-const MOVE_DELAY_MS = 260;
+const DEFAULT_TURN_DELAY_MS = 220;
+const DEFAULT_MOVE_DELAY_MS = 260;
 
-export function useTurtleRunner(level: Level) {
+interface RunnerOpts {
+  turnDelay?: number;
+  moveDelay?: number;
+}
+
+export function useTurtleRunner(level: Level, opts: RunnerOpts = {}) {
+  const turnDelay = opts.turnDelay ?? DEFAULT_TURN_DELAY_MS;
+  const moveDelay = opts.moveDelay ?? DEFAULT_MOVE_DELAY_MS;
+
   const [turtle, setTurtle] = useState<TurtleState>(() => initialTurtleState(level));
   const [status, setStatus] = useState<RunStatus>({ kind: "ready" });
   const [activeInstruction, setActiveInstruction] = useState<number | null>(null);
   const runId = useRef(0);
 
   const reset = useCallback(() => {
-    runId.current += 1; // invalidate any in-flight run loop
+    runId.current += 1;
     setTurtle(initialTurtleState(level));
     setStatus({ kind: "ready" });
     setActiveInstruction(null);
@@ -31,22 +40,20 @@ export function useTurtleRunner(level: Level) {
       setStatus({ kind: "running" });
       await sleep(150);
 
-      let instrIndex = 0;
       let stepsTaken = 0;
 
       for await (const event of runProgram(level, program, start)) {
-        if (runId.current !== myRun) return; // superseded by reset/new run
+        if (runId.current !== myRun) return;
 
         if (event.kind === "turn") {
-          setActiveInstruction(instrIndex);
+          setActiveInstruction(event.atInstruction);
           setTurtle(event.state);
-          await sleep(TURN_DELAY_MS);
-          instrIndex += 1;
+          await sleep(turnDelay);
         } else if (event.kind === "move") {
-          setActiveInstruction(instrIndex);
+          setActiveInstruction(event.atInstruction);
           setTurtle(event.state);
           stepsTaken += 1;
-          await sleep(MOVE_DELAY_MS);
+          await sleep(moveDelay);
         } else if (event.kind === "crash") {
           setStatus({ kind: "crashed", atInstruction: event.atInstruction, reason: event.reason });
           setActiveInstruction(null);
@@ -57,13 +64,12 @@ export function useTurtleRunner(level: Level) {
           return;
         }
       }
-      // Program ended without reaching the end cell
       if (runId.current === myRun) {
         setStatus({ kind: "ready" });
         setActiveInstruction(null);
       }
     },
-    [level]
+    [level, turnDelay, moveDelay],
   );
 
   return { turtle, status, activeInstruction, run, reset };

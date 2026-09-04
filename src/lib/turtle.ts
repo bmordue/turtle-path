@@ -1,4 +1,4 @@
-import type { Dir, Instruction, Level, TurtleState } from "../types";
+import type { Dir, Level, TurtleState } from "../types";
 
 // N, E, S, W step vectors
 export const DIR_VECTORS: Record<Dir, { x: number; y: number }> = {
@@ -49,50 +49,4 @@ export function stepForward(level: Level, state: TurtleState): TurtleState | nul
   const ny = state.y + v.y;
   if (!inBounds(level, nx, ny) || isBlocked(level, nx, ny)) return null;
   return { ...state, x: nx, y: ny, path: [...state.path, [nx, ny]] };
-}
-
-export type RunEvent =
-  | { kind: "turn"; state: TurtleState }
-  | { kind: "move"; state: TurtleState }
-  | { kind: "crash"; atInstruction: number; reason: "wall" | "blocked" }
-  | { kind: "success"; atInstruction: number };
-
-/**
- * Async generator that plays a program against a level, yielding one
- * event per animation tick. The caller drives timing (await + delay
- * between `next()` calls) so the same generator works for instant
- * validation (e.g. tests) or animated playback (the UI).
- */
-export async function* runProgram(
-  level: Level,
-  program: Instruction[],
-  start: TurtleState
-): AsyncGenerator<RunEvent> {
-  let state = start;
-
-  for (let i = 0; i < program.length; i++) {
-    const instr = program[i];
-
-    if (instr.type === "left" || instr.type === "right") {
-      state = { ...state, dir: instr.type === "left" ? turnLeft(state.dir) : turnRight(state.dir) };
-      yield { kind: "turn", state };
-      continue;
-    }
-
-    for (let step = 0; step < instr.n; step++) {
-      const next = stepForward(level, state);
-      if (!next) {
-        const v = DIR_VECTORS[state.dir];
-        const reason = inBounds(level, state.x + v.x, state.y + v.y) ? "blocked" : "wall";
-        yield { kind: "crash", atInstruction: i, reason };
-        return;
-      }
-      state = next;
-      yield { kind: "move", state };
-      if (reachedEnd(level, state)) {
-        yield { kind: "success", atInstruction: i };
-        return;
-      }
-    }
-  }
 }

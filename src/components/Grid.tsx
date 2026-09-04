@@ -1,5 +1,6 @@
 import type { Level, TurtleState } from "../types";
-import { DIR_ANGLE, isBlocked } from "../lib/turtle";
+import { isBlocked } from "../lib/turtle";
+import { TurtleOverlay } from "./TurtleOverlay";
 
 const CELL = 80;
 
@@ -69,11 +70,6 @@ export function Grid({ level, turtle, readOnly = false }: GridProps) {
   const startLabel = cellCenter(level.start.x, level.start.y);
   const endLabel = cellCenter(level.end.x, level.end.y);
 
-  const pathPoints = turtle
-    ? turtle.path.map(([x, y]) => cellCenter(x, y)).map((c) => `${c.cx},${c.cy}`).join(" ")
-    : "";
-  const turtleCenter = turtle ? cellCenter(turtle.x, turtle.y) : null;
-
   return (
     <svg
       className="grid-svg"
@@ -98,25 +94,7 @@ export function Grid({ level, turtle, readOnly = false }: GridProps) {
         END
       </text>
 
-      {!readOnly && turtle && (
-        <>
-          <polyline
-            points={pathPoints}
-            fill="none"
-            stroke="var(--accent)"
-            strokeWidth={4}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            opacity={0.8}
-          />
-          <g
-            style={{ transition: "transform 0.28s linear" }}
-            transform={`translate(${turtleCenter!.cx},${turtleCenter!.cy}) rotate(${DIR_ANGLE[turtle.dir]})`}
-          >
-            <polygon points="0,-16 12,12 -12,12" fill="var(--ink)" stroke="var(--accent)" strokeWidth={2} />
-          </g>
-        </>
-      )}
+      {!readOnly && turtle && <TurtleOverlay turtle={turtle} />}
     </svg>
   );
 }
