@@ -39,14 +39,19 @@ export function reachedEnd(level: Level, state: TurtleState): boolean {
   return state.x === level.end.x && state.y === level.end.y;
 }
 
+export type StepResult =
+  | { state: TurtleState }
+  | { crash: "wall" | "blocked" };
+
 /**
- * A single forward step. Returns the next state, or null if the step
- * would leave the grid or land on a blocked cell (a "crash").
+ * A single forward step. Returns the next state on success,
+ * or the crash reason if the step would leave the grid or land on a blocked cell.
  */
-export function stepForward(level: Level, state: TurtleState): TurtleState | null {
+export function stepForward(level: Level, state: TurtleState): StepResult {
   const v = DIR_VECTORS[state.dir];
   const nx = state.x + v.x;
   const ny = state.y + v.y;
-  if (!inBounds(level, nx, ny) || isBlocked(level, nx, ny)) return null;
-  return { ...state, x: nx, y: ny, path: [...state.path, [nx, ny]] };
+  if (!inBounds(level, nx, ny)) return { crash: "wall" };
+  if (isBlocked(level, nx, ny)) return { crash: "blocked" };
+  return { state: { ...state, x: nx, y: ny, path: [...state.path, [nx, ny]] } };
 }

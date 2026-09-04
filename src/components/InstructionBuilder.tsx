@@ -8,29 +8,29 @@ interface Props {
 }
 
 export function InstructionBuilder({ maxForward, disabled, onAdd }: Props) {
-  const [type, setType] = useState<Instruction["type"]>("forward");
+  const [action, setAction] = useState<Instruction["action"]>("forward");
   const [n, setN] = useState(1);
 
   const add = () => {
-    if (type === "forward") {
-      onAdd({ type: "forward", n: Math.max(1, Math.min(maxForward, n)) });
+    if (action === "forward") {
+      onAdd({ action: "forward", n: Math.max(1, Math.min(maxForward, n)) });
     } else {
-      onAdd({ type });
+      onAdd({ action });
     }
   };
 
   return (
     <div className="add-row">
       <select
-        value={type}
+        value={action}
         disabled={disabled}
-        onChange={(e) => setType(e.target.value as Instruction["type"])}
+        onChange={(e) => setAction(e.target.value as Instruction["action"])}
       >
         <option value="left">Turn left</option>
         <option value="right">Turn right</option>
         <option value="forward">Forward</option>
       </select>
-      {type === "forward" && (
+      {action === "forward" && (
         <input
           type="number"
           min={1}

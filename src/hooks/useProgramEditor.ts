@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
-import type { Instruction, Level } from "../types";
+import type { Instruction } from "../types";
 
-export function useProgramEditor(level: Level) {
+export function useProgramEditor() {
   const [program, setProgram] = useState<Instruction[]>([]);
 
   const addInstruction = useCallback((instr: Instruction) => {
@@ -16,7 +16,5 @@ export function useProgramEditor(level: Level) {
     setProgram([]);
   }, []);
 
-  const maxForward = level.size - 1;
-
-  return { program, addInstruction, removeInstruction, clearProgram, maxForward };
+  return { program, addInstruction, removeInstruction, clearProgram };
 }

@@ -16,9 +16,9 @@ export interface Level {
 }
 
 export type Instruction =
-  | { type: "left" }
-  | { type: "right" }
-  | { type: "forward"; n: number };
+  | { action: "left" }
+  | { action: "right" }
+  | { action: "forward"; n: number };
 
 export interface TurtleState {
   x: number;
@@ -27,7 +27,7 @@ export interface TurtleState {
   path: [number, number][];
 }
 
-export type RunStatus =
+export type ProgramResult =
   | { kind: "idle" | "ready" | "running" }
   | { kind: "success"; steps: number }
   | { kind: "crashed"; atInstruction: number; reason: "wall" | "blocked" };

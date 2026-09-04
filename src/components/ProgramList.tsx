@@ -7,8 +7,8 @@ interface Props {
 }
 
 function label(instr: Instruction): string {
-  if (instr.type === "left") return "↺ turn left";
-  if (instr.type === "right") return "↻ turn right";
+  if (instr.action === "left") return "↺ turn left";
+  if (instr.action === "right") return "↻ turn right";
   return `↑ forward ${instr.n}`;
 }
 

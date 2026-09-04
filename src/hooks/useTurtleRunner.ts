@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import type { Instruction, Level, RunStatus, TurtleState } from "../types";
+import type { Instruction, Level, ProgramResult, TurtleState } from "../types";
 import { initialTurtleState } from "../lib/turtle";
 import { runProgram } from "../lib/simulation";
 
@@ -20,15 +20,15 @@ export function useTurtleRunner(level: Level, opts: RunnerOpts = {}) {
   const moveDelay = opts.moveDelay ?? DEFAULT_MOVE_DELAY_MS;
 
   const [turtle, setTurtle] = useState<TurtleState>(() => initialTurtleState(level));
-  const [status, setStatus] = useState<RunStatus>({ kind: "ready" });
-  const [activeInstruction, setActiveInstruction] = useState<number | null>(null);
+  const [status, setStatus] = useState<ProgramResult>({ kind: "ready" });
+  const [executingInstructionIndex, setExecutingInstructionIndex] = useState<number | null>(null);
   const runId = useRef(0);
 
   const reset = useCallback(() => {
     runId.current += 1;
     setTurtle(initialTurtleState(level));
     setStatus({ kind: "ready" });
-    setActiveInstruction(null);
+    setExecutingInstructionIndex(null);
   }, [level]);
 
   const run = useCallback(
@@ -46,31 +46,31 @@ export function useTurtleRunner(level: Level, opts: RunnerOpts = {}) {
         if (runId.current !== myRun) return;
 
         if (event.kind === "turn") {
-          setActiveInstruction(event.atInstruction);
+          setExecutingInstructionIndex(event.atInstruction);
           setTurtle(event.state);
           await sleep(turnDelay);
         } else if (event.kind === "move") {
-          setActiveInstruction(event.atInstruction);
+          setExecutingInstructionIndex(event.atInstruction);
           setTurtle(event.state);
           stepsTaken += 1;
           await sleep(moveDelay);
         } else if (event.kind === "crash") {
           setStatus({ kind: "crashed", atInstruction: event.atInstruction, reason: event.reason });
-          setActiveInstruction(null);
+          setExecutingInstructionIndex(null);
           return;
         } else if (event.kind === "success") {
           setStatus({ kind: "success", steps: stepsTaken });
-          setActiveInstruction(null);
+          setExecutingInstructionIndex(null);
           return;
         }
       }
       if (runId.current === myRun) {
         setStatus({ kind: "ready" });
-        setActiveInstruction(null);
+        setExecutingInstructionIndex(null);
       }
     },
     [level, turnDelay, moveDelay],
   );
 
-  return { turtle, status, activeInstruction, run, reset };
+  return { turtle, status, executingInstructionIndex, run, reset };
 }

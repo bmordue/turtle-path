@@ -11,11 +11,12 @@ import { PrintView } from "./print/PrintView";
 function Game() {
   const [levelIndex, setLevelIndex] = useState(0);
   const level = LEVELS[levelIndex];
-  const { program, addInstruction, removeInstruction, clearProgram, maxForward } =
-    useProgramEditor(level);
-  const { turtle, status, activeInstruction, run, reset } = useTurtleRunner(level);
+  const { program, addInstruction, removeInstruction, clearProgram } =
+    useProgramEditor();
+  const { turtle, status, executingInstructionIndex, run, reset } = useTurtleRunner(level);
 
   const running = status.kind === "running";
+  const maxForward = level.size - 1;
 
   const selectLevel = (i: number) => {
     setLevelIndex(i);
@@ -63,7 +64,7 @@ function Game() {
           />
           <ProgramList
             program={program}
-            activeIndex={activeInstruction}
+            activeIndex={executingInstructionIndex}
             onRemove={removeInstruction}
           />
 

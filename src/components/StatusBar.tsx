@@ -1,6 +1,6 @@
-import type { RunStatus } from "../types";
+import type { ProgramResult } from "../types";
 
-function message(status: RunStatus, queued: number): { text: string; kind?: "ok" | "bad" } {
+function message(status: ProgramResult, queued: number): { text: string; kind?: "ok" | "bad" } {
   switch (status.kind) {
     case "ready":
       return { text: `Ready to run. ${queued} instruction(s) queued.` };
@@ -20,7 +20,7 @@ function message(status: RunStatus, queued: number): { text: string; kind?: "ok"
   }
 }
 
-export function StatusBar({ status, queued }: { status: RunStatus; queued: number }) {
+export function StatusBar({ status, queued }: { status: ProgramResult; queued: number }) {
   const { text, kind } = message(status, queued);
   return <div className={`status${kind ? ` ${kind}` : ""}`}>{text}</div>;
 }
