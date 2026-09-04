@@ -9,13 +9,15 @@ interface GridProps {
   turtle?: TurtleState;
   /** Print/worksheet mode: no turtle marker, no path trail. */
   readOnly?: boolean;
+  /** Black-and-white rendering for print. */
+  bw?: boolean;
 }
 
 function cellCenter(x: number, y: number) {
   return { cx: x * CELL + CELL / 2, cy: y * CELL + CELL / 2 };
 }
 
-export function Grid({ level, turtle, readOnly = false }: GridProps) {
+export function Grid({ level, turtle, readOnly = false, bw = false }: GridProps) {
   const size = level.size;
   const cells = [];
 
@@ -25,18 +27,18 @@ export function Grid({ level, turtle, readOnly = false }: GridProps) {
       const isStart = x === level.start.x && y === level.start.y;
       const isEnd = x === level.end.x && y === level.end.y;
       let fill = "#FFFFFF";
-      let stroke = "var(--paper-line)";
+      let stroke = bw ? "#CCCCCC" : "var(--paper-line)";
       if (blocked) {
-        fill = "var(--blocked-fill)";
-        stroke = "var(--blocked)";
+        fill = bw ? "#E8E8E8" : "var(--blocked-fill)";
+        stroke = bw ? "#000000" : "var(--blocked)";
       }
       if (isStart) {
-        fill = "#DFF3E3";
-        stroke = "var(--good)";
+        fill = bw ? "#FFFFFF" : "#DFF3E3";
+        stroke = bw ? "#000000" : "var(--good)";
       }
       if (isEnd) {
-        fill = "var(--accent-soft)";
-        stroke = "var(--accent)";
+        fill = bw ? "#FFFFFF" : "var(--accent-soft)";
+        stroke = bw ? "#000000" : "var(--accent)";
       }
       cells.push(
         <rect
@@ -59,7 +61,7 @@ export function Grid({ level, turtle, readOnly = false }: GridProps) {
             y1={y * CELL + CELL - 8}
             x2={x * CELL + CELL - 8}
             y2={y * CELL + 8}
-            stroke="var(--blocked)"
+            stroke={bw ? "#000000" : "var(--blocked)"}
             strokeWidth={2}
           />
         );
@@ -83,14 +85,26 @@ export function Grid({ level, turtle, readOnly = false }: GridProps) {
         width={size * CELL - 4}
         height={size * CELL - 4}
         fill="none"
-        stroke="var(--ink)"
+        stroke={bw ? "#000000" : "var(--ink)"}
         strokeWidth={3}
         rx={4}
       />
-      <text x={startLabel.cx} y={startLabel.cy + 38} textAnchor="middle" className="cell-label good">
+      <text
+        x={startLabel.cx}
+        y={startLabel.cy + 38}
+        textAnchor="middle"
+        className="cell-label good"
+        style={bw ? { fill: "#000000" } : undefined}
+      >
         START
       </text>
-      <text x={endLabel.cx} y={endLabel.cy + 38} textAnchor="middle" className="cell-label end">
+      <text
+        x={endLabel.cx}
+        y={endLabel.cy + 38}
+        textAnchor="middle"
+        className="cell-label end"
+        style={bw ? { fill: "#000000" } : undefined}
+      >
         END
       </text>
 

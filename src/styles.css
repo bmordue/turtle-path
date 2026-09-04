@@ -87,19 +87,83 @@ footer.instructions { margin-top: 34px; font-size: 0.92rem; color: var(--ink-sof
 footer.instructions b { color: var(--ink); }
 
 /* ---------- Print worksheet (its own route, /?print=1) ---------- */
-.worksheet { max-width: 900px; margin: 0 auto; padding: 24px; background: #fff; }
-.ws-page { padding: 24px 4px; page-break-after: always; }
-.ws-page:last-child { page-break-after: auto; }
-.ws-title { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 3px solid #000; padding-bottom: 8px; margin-bottom: 16px; }
-.ws-title h2 { margin: 0; font-size: 1.4rem; }
-.ws-title span { font-family: ui-monospace, monospace; font-size: 0.85rem; }
-.ws-body { display: flex; gap: 24px; align-items: flex-start; }
-.ws-grid-col { flex: 0 0 320px; }
-.ws-lines { flex: 1 1 auto; }
-.ws-lines ol { padding-left: 20px; font-family: ui-monospace, monospace; font-size: 0.95rem; line-height: 2.4; }
-.ws-lines li { border-bottom: 1px solid #999; }
-.ws-legend { margin-top: 14px; font-size: 0.8rem; font-family: ui-monospace, monospace; display: flex; gap: 16px; flex-wrap: wrap; }
-.instr-key { margin-top: 18px; font-size: 0.85rem; border-top: 1px dashed #999; padding-top: 10px; }
+.worksheet {
+  max-width: 100%;
+  margin: 0;
+  padding: 10mm;
+  background: #fff;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+}
+.ws-level {
+  display: flex;
+  gap: 10mm;
+  margin-bottom: 5mm;
+  flex: 1;
+  min-height: 0;
+}
+.ws-level:last-child { margin-bottom: 0; }
+.ws-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 2px solid #000;
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+.ws-title h2 { margin: 0; font-size: 0.95rem; }
+.ws-title span {
+  font-family: ui-monospace, monospace;
+  font-size: 0.65rem;
+  color: #666;
+}
+.ws-grid-col {
+  flex: 1;
+  min-width: 0;
+}
+.ws-grid-col svg { max-height: 45vh; }
+.ws-legend {
+  margin-top: 4px;
+  font-size: 0.65rem;
+  font-family: ui-monospace, monospace;
+  color: #666;
+  display: flex;
+  gap: 10px;
+}
+.ws-prompt {
+  margin: 4px 0 2px;
+  font-size: 0.7rem;
+  color: #666;
+}
+.ws-level ol {
+  padding-left: 14px;
+  margin: 0;
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  columns: 2;
+  column-gap: 16px;
+}
+.ws-level li {
+  border-bottom: 1px solid #ccc;
+  padding: 0 0 1px;
+}
+.instr-key {
+  margin-top: 3px;
+  font-size: 0.65rem;
+  color: #666;
+  border-top: 1px solid #ccc;
+  padding-top: 3px;
+}
 @media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
   body { background: #fff; }
+  .worksheet { padding: 0; }
+  .ws-level { page-break-inside: avoid; }
+  .ws-level .cell-label { fill: #000; }
 }

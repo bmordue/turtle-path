@@ -7,32 +7,27 @@ export function PrintView() {
   return (
     <div className="worksheet">
       {LEVELS.map((level) => (
-        <div className="ws-page" key={level.name}>
+        <div className="ws-level" key={level.name}>
           <div className="ws-title">
-            <h2>Turtle Path — {level.name}</h2>
+            <h2>{level.name}</h2>
             <span>forward X · turn left · turn right</span>
           </div>
-          <div className="ws-body">
-            <div className="ws-grid-col">
-              <Grid level={level} readOnly />
-              <div className="ws-legend">
-                <span>▢ blocked</span>
-                <span>▢ START</span>
-                <span>▢ END</span>
-              </div>
+          <div className="ws-grid-col">
+            <Grid level={level} readOnly bw />
+            <div className="ws-legend">
+              <span>&#9633; blocked</span>
+              <span>&#9633; START</span>
+              <span>&#9633; END</span>
             </div>
-            <div className="ws-lines">
-              <p>Write your program, one instruction per line:</p>
-              <ol>
-                {Array.from({ length: 14 }).map((_, i) => (
-                  <li key={i}>&nbsp;</li>
-                ))}
-              </ol>
+            <p className="ws-prompt">Write your program, one instruction per line:</p>
+            <ol>
+              {Array.from({ length: 10 }).map((_, i) => (
+                <li key={i}>&nbsp;</li>
+              ))}
+            </ol>
+            <div className="instr-key">
+              Turtle starts facing {DIR_NAMES[level.startDir]}.
             </div>
-          </div>
-          <div className="instr-key">
-            Instruction set: <b>turn left</b> (90°) · <b>turn right</b> (90°) · <b>forward X</b> (X = number of
-            squares). Turtle starts facing {DIR_NAMES[level.startDir]}.
           </div>
         </div>
       ))}
