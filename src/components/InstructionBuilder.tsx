@@ -1,13 +1,15 @@
 import { useState } from "react";
 import type { Instruction } from "../types";
+import type { InstructionSet } from "../lib/instructionSets";
 
 interface Props {
   maxForward: number;
+  instructionSet: InstructionSet;
   disabled?: boolean;
   onAdd: (instr: Instruction) => void;
 }
 
-export function InstructionBuilder({ maxForward, disabled, onAdd }: Props) {
+export function InstructionBuilder({ maxForward, instructionSet, disabled, onAdd }: Props) {
   const [action, setAction] = useState<Instruction["action"]>("forward");
   const [n, setN] = useState(1);
 
@@ -26,9 +28,9 @@ export function InstructionBuilder({ maxForward, disabled, onAdd }: Props) {
         disabled={disabled}
         onChange={(e) => setAction(e.target.value as Instruction["action"])}
       >
-        <option value="left">Turn left</option>
-        <option value="right">Turn right</option>
-        <option value="forward">Forward</option>
+        <option value="left">{instructionSet.turnLeft}</option>
+        <option value="right">{instructionSet.turnRight}</option>
+        <option value="forward">{instructionSet.forward}</option>
       </select>
       {action === "forward" && (
         <input

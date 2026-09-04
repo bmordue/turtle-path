@@ -1,18 +1,14 @@
 import type { Instruction } from "../types";
+import { labelInstruction, type InstructionSet } from "../lib/instructionSets";
 
 interface Props {
   program: Instruction[];
   activeIndex: number | null;
+  instructionSet: InstructionSet;
   onRemove: (index: number) => void;
 }
 
-function label(instr: Instruction): string {
-  if (instr.action === "left") return "↺ turn left";
-  if (instr.action === "right") return "↻ turn right";
-  return `↑ forward ${instr.n}`;
-}
-
-export function ProgramList({ program, activeIndex, onRemove }: Props) {
+export function ProgramList({ program, activeIndex, instructionSet, onRemove }: Props) {
   if (!program.length) {
     return <p className="empty-hint">No instructions yet — add some above.</p>;
   }
@@ -22,7 +18,7 @@ export function ProgramList({ program, activeIndex, onRemove }: Props) {
         <li key={i} className={i === activeIndex ? "active-step" : ""}>
           <span>
             <span className="idx">{i + 1}.</span>
-            {label(instr)}
+            {labelInstruction(instr, instructionSet)}
           </span>
           <button onClick={() => onRemove(i)} aria-label={`Remove instruction ${i + 1}`}>
             ✕

@@ -1,16 +1,21 @@
 import { LEVELS } from "../lib/levels";
 import { Grid } from "../components/Grid";
+import { getInstructionSet } from "../lib/instructionSets";
 
 const DIR_NAMES = ["up", "right", "down", "left"];
 
 export function PrintView() {
+  const set = getInstructionSet(new URLSearchParams(window.location.search).get("set"));
+
   return (
     <div className="worksheet">
       {LEVELS.map((level) => (
         <div className="ws-level" key={level.name}>
           <div className="ws-title">
             <h2>{level.name}</h2>
-            <span>forward X · turn left · turn right</span>
+            <span>
+              {set.forwardPhrase("X")} · {set.turnLeft.toLowerCase()} · {set.turnRight.toLowerCase()}
+            </span>
           </div>
           <div className="ws-grid-col">
             <Grid level={level} readOnly bw />
@@ -26,7 +31,8 @@ export function PrintView() {
               ))}
             </ol>
             <div className="instr-key">
-              Turtle starts facing {DIR_NAMES[level.startDir]}.
+              Instruction set ({set.name}): <b>{set.turnLeft}</b> · <b>{set.turnRight}</b> ·{" "}
+              <b>{set.forwardPhrase("X")}</b>. Turtle starts facing {DIR_NAMES[level.startDir]}.
             </div>
           </div>
         </div>

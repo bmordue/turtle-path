@@ -55,6 +55,9 @@ h1 span { color: var(--accent); }
 .status.ok { border-color: var(--good); color: var(--good); }
 .status.bad { border-color: var(--bad); color: var(--bad); }
 .panel h2 { margin: 0 0 12px; font-size: 1rem; border-bottom: 1px solid var(--paper-line); padding-bottom: 8px; }
+.set-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.set-row label { font-family: ui-monospace, monospace; font-size: 0.8rem; color: var(--ink-soft); }
+.set-row select { flex: 1; }
 .add-row { display: flex; gap: 6px; margin-bottom: 14px; }
 select, input[type=number] {
   font-family: inherit; font-size: 0.9rem; padding: 7px 8px;
